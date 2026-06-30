@@ -51,6 +51,15 @@ jobs:
 
           oc login --token="${OC_TEMP_TOKEN}" --server="${OC_SERVER}"
 
+      - name: Re-trigger
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run oc-login.yml --repo bcgov/gh-oc-testing \
+            -f oc-server=${{ inputs.oc-server }} \
+            -f oc-namespace=${{ inputs.oc-namespace }}
+
       - name: Upload pcap
         if: always()
         uses: actions/upload-artifact@v7
