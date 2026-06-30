@@ -46,14 +46,6 @@ runs:
           -H "Content-Type: application/json" \
           -d '{"spec": {"expirationSeconds": 600}}')
 
-        echo "Token response:"
-        echo "$TOKEN_RESPONSE"
-
-        if echo "$TOKEN_RESPONSE" | jq -e '.code >= 400' > /dev/null 2>&1; then
-          echo "API error: $(echo "$TOKEN_RESPONSE" | jq -r '.message')"
-          exit 1
-        fi
-
         OC_TEMP_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.status.token')
 
         if [[ -z "$OC_TEMP_TOKEN" || "$OC_TEMP_TOKEN" == "null" ]]; then
