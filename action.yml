@@ -30,6 +30,8 @@ runs:
         OC_SERVER: ${{ inputs.oc-server }}
         OC_TOKEN: ${{ inputs.oc-token }}
       run: |
+        echo "Public IP: $(curl -s https://checkip.amazonaws.com)"
+
         PORT=$(echo "$OC_SERVER" | grep -oP '(?<=:)\d+(?=[/]|$)' || echo "443")
         echo "Capturing on port: $PORT"
 
