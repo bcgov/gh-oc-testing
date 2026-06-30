@@ -32,12 +32,21 @@ runs:
         trap 'sudo kill "$TCPDUMP_PID" 2>/dev/null; wait "$TCPDUMP_PID" 2>/dev/null' EXIT
         sleep 1
 
-        OC_TEMP_TOKEN=$(curl -sk -X POST \
+        TOKEN_RESPONSE=$(curl -sk -X POST \
           "${OC_SERVER}/api/v1/namespaces/${{ inputs.oc-namespace }}/serviceaccounts/${{ inputs.oc-service-account }}/token" \
           -H "Authorization: Bearer ${OC_TOKEN}" \
           -H "Content-Type: application/json" \
-          -d '{"spec": {"expirationSeconds": 600}}' \
-          | jq -r '.status.token')
+          -d '{"spec": {"expirationSeconds": 600}}')
+
+        echo "Token response:"
+        echo "$TOKEN_RESPONSE"
+
+        OC_TEMP_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.status.token')
+
+        if [[ -z "$OC_TEMP_TOKEN" || "$OC_TEMP_TOKEN" == "null" ]]; then
+          echo "Failed to obtain temp token"
+          exit 1
+        fi
 
         oc login --token="${OC_TEMP_TOKEN}" --server="${OC_SERVER}"
 
