@@ -1,0 +1,28 @@
+name: OC Login
+
+on:
+  workflow_dispatch:
+    inputs:
+      oc-server:
+        description: OpenShift server URL
+        required: true
+      oc-namespace:
+        description: OpenShift namespace for the service account
+        required: true
+      oc-service-account:
+        description: Service account name
+        required: false
+        default: ghactions
+
+jobs:
+  oc-login:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./
+        with:
+          oc-server: ${{ inputs.oc-server }}
+          oc-token: ${{ secrets.OC_TOKEN }}
+          oc-namespace: ${{ inputs.oc-namespace }}
+          oc-service-account: ${{ inputs.oc-service-account }}
